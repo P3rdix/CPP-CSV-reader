@@ -10,7 +10,7 @@
 class WrongFileTypeException : public exception{
     public:
         const char* what() const throw(){
-            return "\n";
+            return "\nWrong Type File";
         }
 };
 
