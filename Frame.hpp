@@ -5,67 +5,77 @@
 #include <string>
 #include <fstream>
 #include <iostream>
-#include <exception>
+#include <sstream>
 
-class WrongFileTypeException : public exception{
+class column{
+    int x;
+};
+
+std::vector<std::string> adv_tokenizer(std::string s, char del){
+    std::stringstream l{s};
+    std::string word;
+    std::vector<std::string> ret;
+    while (!l.eof()) {
+        getline(l, word, del);
+        ret.push_back(word);
+    }
+    return ret;
+}
+
+class WrongFileTypeException{
     public:
-        const char* what() const throw(){
-            return "\nWrong Type File";
+        WrongFileTypeException(std::string name, std::string end){
+            name = name;
+            end = end;
         }
+        void printmsg(){
+            std::cout<<std::endl<<name<<" does not end with .csv";
+            std::cout<<std::endl<<"File ends with ";
+            std::cout<<std::endl<<"Required File Type is comma separated value file (.csv)";
+            std::cout<<std::endl;
+        }
+    private:
+        std::string name,end;
 };
 
 class Frame{
     public:
         column* read(std::string);
+        Frame(std::string,int);
     private:
         column* a;
-        std::String* col_names;
+        std::string* col_names;
         int dim[2];
 
 
-}
-
-Frame::Frame(std::string FILENAME){
-    if(FILENAME.substring(FILENAME.length()-4,4) != ".csv"){
-        WrongFileTypeException w;
-        throw w;
-    }
-    ifstream fin;
-    fin.open(FILENAME);
-    std::String names;
-    getline(fin,names);
-}
-
-class column{
-    public:
-
-    private:
-        std::string name;
-
-
-}
-
-struct init{
-    std::string name;
-    vector<int>;
-    vector<float>;
-    vector<std::string>;
-    struct column* next;
 };
 
-column* Frame::read(std::string FILENAME){
-
-}
-
-Frame::Frame(std::string FILENAME){
-    a = read(FILENAME);
-
-}
-
-column::column(std::string n,int* series){
-    auto series = series;
-    name = n;
-
+Frame::Frame(std::string FILENAME, int awk = 0){
+    if(awk == 0){
+        try{
+            if(FILENAME.substr(FILENAME.length()-4,4) != ".csv"){
+                WrongFileTypeException w = WrongFileTypeException(FILENAME, FILENAME.substr(FILENAME.length()-4,4));
+                throw w;
+            }
+            std::ifstream fin;
+            if(fin.fail()){
+                std::cout<<"File Not Found";
+            }
+            std::string names;
+            getline(fin,names);
+            std::vector<std::string> c = adv_tokenizer(names,',');
+            for(int i=0;i<c.size();i++){
+                std::cout<<c.at(i)<<std::endl;
+            }
+            dim[0] = c.size();
+        }
+        catch(WrongFileTypeException e){
+            e.printmsg();
+        }
+    }
+    else{
+        
+    }
 }
 
 #endif
