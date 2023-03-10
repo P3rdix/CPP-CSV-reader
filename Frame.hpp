@@ -11,7 +11,7 @@ class column{
     int x;
 };
 
-std::vector<std::string> adv_tokenizer(std::string s, char del){
+std::vector<std::string> breakup(std::string s, char del){
     std::stringstream l{s};
     std::string word;
     std::vector<std::string> ret;
@@ -29,10 +29,10 @@ class WrongFileTypeException{
             end = end;
         }
         void printmsg(){
-            std::cout<<std::endl<<name<<" does not end with .csv";
-            std::cout<<std::endl<<"File ends with ";
-            std::cout<<std::endl<<"Required File Type is comma separated value file (.csv)";
-            std::cout<<std::endl;
+            std::cerr<<std::endl<<name<<" does not end with .csv";
+            std::cerr<<std::endl<<"File ends with "<<end;
+            std::cerr<<std::endl<<"Required File Type is comma separated value file (.csv)";
+            std::cerr<<std::endl;
         }
     private:
         std::string name,end;
@@ -60,10 +60,13 @@ Frame::Frame(std::string FILENAME, int awk = 0){
             std::ifstream fin;
             if(fin.fail()){
                 std::cout<<"File Not Found";
+                std::cout<<"HIIIIIIIIIIIIIII";
+                return;
             }
+            std::cout<<"BYRRRRRR";
             std::string names;
             getline(fin,names);
-            std::vector<std::string> c = adv_tokenizer(names,',');
+            std::vector<std::string> c = breakup(names,',');
             for(int i=0;i<c.size();i++){
                 std::cout<<c.at(i)<<std::endl;
             }
