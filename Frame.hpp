@@ -24,80 +24,63 @@ std::vector<std::string> breakup(std::string s, char del){
     return ret;
 }
 
-class WrongFileTypeException{
-    public:
-        WrongFileTypeException(std::string a, std::string b){
-            name = a;
-            end = b;
-            std::cout<<name<<"   "<<end<<std::endl; 
-        }
-        void printmsg(){
-            std::cout<<name<<"   "<<end<<std::endl; 
-            std::cerr<<std::endl<<name<<" does not end with .csv";
-            std::cerr<<std::endl<<"File ends with "<<end;
-            std::cerr<<std::endl<<"Required File Type is comma separated value file (.csv)";
-            std::cerr<<std::endl;
-        }
-    private:
-        std::string name,end;
-};
-
-class FileNotFoundException{
-    public:
-        FileNotFoundException(std::string a){
-            name = a;
-        }
-        void printmsg(){
-            std::cerr<<std::endl<<name<<" does not exist";
-            return;
-        }
-    private:
-        std::string name,end;
-};
-
-
-
 class Frame{
     public:
-        column* read(std::string);
         Frame(std::string);
         Frame(std::string,int);
     private:
-        column* a;
         std::string* col_names;
         int dim[2];
-
-
+        int success;
 };
 
 Frame::Frame(std::string FILENAME){
     try{
         if(FILENAME.substr(FILENAME.length()-4,4) != ".csv"){
-            WrongFileTypeException w = WrongFileTypeException(FILENAME, FILENAME.substr(FILENAME.length()-4,4));
-            throw w;
+            throw FILENAME+"T";
         }
         std::ifstream fin;
         fin.open(FILENAME);
         if(fin.fail()){
-            FileNotFoundException f(FILENAME);
-            throw f;
+            throw FILENAME+"E";
         }
-        std::cout<<"BYRRRRRR";
-        std::string names;
-        getline(fin,names);
-        std::vector<std::string> c = breakup(names,',');
-        for(int i=0;i<c.size();i++){
-            std::cout<<c.at(i)<<std::endl;
-        }
+        std::string n;
+        getline(fin,n);
+        std::vector<std::string> c = breakup(n,',');
         dim[0] = c.size();
+        std::string a[dim[0]];
+        std::vector<std::string> b[dim[0]];
+        int r[dim[0]]={0};
+        while(!fin.eof()){
+            getline(fin,n);
+            c = breakup(n,',');
+            for(int i=0;i<dim[0];i++){
+                if(r[i] == 0 && !is_number(c.at(i))){
+                    if(isFloat(c.at(i))){
+                        r[i]+=1;
+                    }
+                    else{
+                        r[i]+=2;
+                    }
+                }
+                else if(r[i] == 1 && !isFloat(c.at(i))){
+                    r[i]+=1;
+                }
+                b[i].push_back(c.at(i));
+            }
+        }
     }
-    catch(WrongFileTypeException e){
-        e.printmsg();
+    catch(std::string e){
+        if(e == FILENAME+"T"){
+            std::cerr<<std::endl<<FILENAME<<" does not end with .csv";
+            std::cerr<<std::endl<<"File ends with "<<FILENAME.substr(FILENAME.length()-4,4);
+            std::cerr<<std::endl<<"Required File Type is comma separated value file (.csv)"<<std::endl;
+        }
+        else if(e == FILENAME+"E"){
+            std::cerr<<FILENAME<<" file does not exist";
+        }
+        success = -1;
     }
-    catch(FileNotFoundException e){
-        e.printmsg();
-    }
-
 }
 
 int to_Int(std::string a){
