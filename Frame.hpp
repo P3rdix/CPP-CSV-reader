@@ -100,17 +100,17 @@ Frame::Frame(std::string FILENAME){
 
 struct column* create_col(struct column* x, std::vector<std::string> y, int a, int dim){
     if(a == 0){
-        x->i = new int(dim);
+        x->i = new int[dim];
         for(int j=0;j<dim;j++){
             *(x->i + j) = std::stoi(y.at(j));
-        }
+        }  
         x->s = NULL;
         x->f = NULL;
     }
     else if(a == 1){
-        x->f = new float(dim);
+        x->f = new float[dim];
         for(int j=0;j<dim;j++){
-            *(x->i + j) = std::stof(y.at(j));
+            *(x->f + j) = std::stof(y.at(j));
         }
         x->i = NULL;
         x->s = NULL;
