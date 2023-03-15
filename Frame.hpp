@@ -8,8 +8,6 @@
 #include <sstream>
 #include <stdlib.h>
 
-int to_Int(std::string);
-
 struct column{
     int*i;
     float* f;
@@ -17,6 +15,9 @@ struct column{
     std::string name;
     struct column* next;
 };
+
+
+struct column* create_col(struct column*, std::vector<std::string>, int, int, std::string);
 
 std::vector<std::string> breakup(std::string s, char del){
     std::stringstream l{s};
@@ -29,16 +30,31 @@ std::vector<std::string> breakup(std::string s, char del){
     return ret;
 }
 
+bool is_number(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && (std::isdigit(*it) || *it == '-')) ++it;
+    return !s.empty() && it == s.end();
+}
+
 class Frame{
     public:
         Frame(std::string);
         Frame(std::string,int);
+        void print();
     private:
-        ** col_names;
         int dim[2];
         int success;
         struct column* x;
 };
+
+
+bool isFloat( std::string myString ) {
+    std::istringstream iss(myString);
+    float f;
+    iss >> std::noskipws >> f;
+    return iss.eof() && !iss.fail(); 
+}
 
 Frame::Frame(std::string FILENAME){
     try{
@@ -54,15 +70,16 @@ Frame::Frame(std::string FILENAME){
         std::string n;
         getline(fin,n);
         std::vector<std::string> c = breakup(n,',');
+        std::vector<std::string> names = c;
         dim[0] = c.size();
-        std::string a[dim[0]];
         std::vector<std::string> b[dim[0]];
         int r[dim[0]]={0};
+        getline(fin,n);
         while(!fin.eof()){
-            getline(fin,n);
+            std::cout<<n<<std::endl;
             c = breakup(n,',');
             for(int i=0;i<dim[0];i++){
-                if(r[i] == 0 && !is_number(c.at(i))){
+                if(r[i] == 0 && !is_number(c.at(i)) && c.at(i)!=""){
                     if(isFloat(c.at(i))){
                         r[i]+=1;
                     }
@@ -70,35 +87,43 @@ Frame::Frame(std::string FILENAME){
                         r[i]+=2;
                     }
                 }
-                else if(r[i] == 1 && !isFloat(c.at(i))){
+                else if(r[i] == 1 && !isFloat(c.at(i)) && c.at(i)!=""){
                     r[i]+=1;
                 }
                 b[i].push_back(c.at(i));
             }
+            getline(fin,n);
         }
+        
         dim[1] = b[0].size();
-        struct column* q=x;
+        struct column* q;
         for(int i=0;i<dim[0];i++){
             struct column* t = new struct column;
             if(x == NULL){
-                x = 
+                x = create_col(t,b[i],r[i],dim[1], names.at(i));
+                q = x;
+            }
+            else{
+                q->next = create_col(t,b[i],r[i],dim[1], names.at(i));
+                q = q->next;
             }
         }
     }
     catch(std::string e){
         if(e == FILENAME+"T"){
-            std::cerr<<std::endl<<FILENAME<<" does not end with .csv";
+            std::cerr<<FILENAME<<" does not end with .csv";
             std::cerr<<std::endl<<"File ends with "<<FILENAME.substr(FILENAME.length()-4,4);
             std::cerr<<std::endl<<"Required File Type is comma separated value file (.csv)"<<std::endl;
         }
         else if(e == FILENAME+"E"){
-            std::cerr<<FILENAME<<" file does not exist";
+            std::cerr<<FILENAME<<" file does not exist"<<std::endl;
         }
         success = -1;
     }
 }
 
-struct column* create_col(struct column* x, std::vector<std::string> y, int a, int dim){
+struct column* create_col(struct column* x, std::vector<std::string> y, int a, int dim, std::string name){
+    x->name = name;
     if(a == 0){
         x->i = new int[dim];
         for(int j=0;j<dim;j++){
@@ -128,6 +153,15 @@ struct column* create_col(struct column* x, std::vector<std::string> y, int a, i
     }
     x->next = NULL;
     return x;
+}
+
+void Frame::print(){
+    struct column* t = x;
+    while(t!=NULL){
+        std::cout<<t->name<<std::endl<<t->f<<std::endl<<t->i<<std::endl<<t->s<<std::endl;
+        t = t->next;
+    }
+    return;
 }
 
 #endif
