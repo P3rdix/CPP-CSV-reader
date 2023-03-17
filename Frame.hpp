@@ -42,7 +42,7 @@ class Frame{
         Frame(std::string);
         Frame(std::string,int);
         void print();
-    private:
+    protected:
         int dim[2];
         int success;
         struct column* x;
@@ -153,15 +153,6 @@ struct column* create_col(struct column* x, std::vector<std::string> y, int a, i
     }
     x->next = NULL;
     return x;
-}
-
-void Frame::print(){
-    struct column* t = x;
-    while(t!=NULL){
-        std::cout<<t->name<<std::endl<<t->f<<std::endl<<t->i<<std::endl<<t->s<<std::endl;
-        t = t->next;
-    }
-    return;
 }
 
 #endif
