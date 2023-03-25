@@ -18,7 +18,10 @@
 
 ##### constructors:
 
+1. Complete:
 * Frame (string) : Constructor taking simple filename, and returns a Frame with the required dataframe or throws the FileNotFoundError if the file isn't present
+
+2. Incomplete:
 * Frame(Frame, string[]) : Constructor takes a Frame as well as a list of columns and creates a new Frame using this 
 
 ##### Attributes:
@@ -28,7 +31,9 @@
 * Columns: A pointer to a series of column class objects which each holds the name as well as the data of the column
 
 ##### Member functions:
+1. Complete:
 
+2. Incomplete:
 * Append(Frame): appends a frame to the current one
 * At(String, int): Returns the value at said position
 * iAt(int,int): Returns the value at given position
